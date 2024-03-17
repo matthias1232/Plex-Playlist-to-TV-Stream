@@ -25,7 +25,7 @@ Default location for your HLS webserver is /var/www/html/247/ (you can change it
 
 You can also run some specific Stream as real 24/7 with "video.py your-playlist" (your-playlist = name of your playlist file without .txt)
 
-While the Stream is Loading, the HLS Server will play the default Loading Video for the first few Seconds.
+While the Stream is Loading, the HLS Server will play the default Loading Video (pqr.ts) for the first few Seconds.
 The Music for the Video is from:
 https://www.allesgemafrei.de/de/info/kostenlose-gemafreie-musik.html
 Le Voyage
