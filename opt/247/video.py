@@ -114,7 +114,12 @@ while lastplaytimesecago > 0:
         if entry_number > playlistentries:
             entry_number = 1
         if entry_number == position:
-            if lastplaytimesecago >= durationsec:
+            if lastplaytimesecago == durationsec:
+                position = position + 1
+                lastplaytimesecago = 0
+                lasttime = 0
+                continue
+            if lastplaytimesecago > durationsec:
                 if durationsec == 0:
                     durationsec = 1
                 lastplaytimesecago = lastplaytimesecago - durationsec
@@ -124,9 +129,11 @@ while lastplaytimesecago > 0:
                if durationsec < lasttime:
                    lasttime = lasttime - durationsec
                    position = position + 1
+                   continue
                if durationsec > lasttime:
                    lasttime = lasttime + lastplaytimesecago
                    lastplaytimesecago = 0
+                   continue
 
         entry_number = entry_number + 1
     #lastplaytimesecago = 0
