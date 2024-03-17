@@ -47,22 +47,18 @@ systemctl enable 247.service
 
 
 
-
-
-
-
-
-movienames=()
-for dir in /opt/247/*/
-do
-name=$(basename "$dir")
-movienames+=($name)
-done
-
 #printf '%s\n' "${movienames[@]}"
 
 while :
-do
+	do
+	movienames=()
+	for dir in /opt/247/*/
+		do
+		name=$(basename "$dir")
+		movienames+=($name)
+	done
+
+
 	for moviename in ${movienames[@]}
 		do
 	        #find /var/www/html/247/*/*.ts -name '*.ts' -mmin +1 -delete >/dev/null 2>&1
