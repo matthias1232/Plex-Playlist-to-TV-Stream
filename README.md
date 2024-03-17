@@ -9,6 +9,12 @@ Everything is original from the creator, i just added the movie duration to the 
 Example Playlist Output is:
 https://your-plexserver.com:8443/library/parts/593852/1555545600/file.mkv?X-Plex-Token=XXXXXXXXXXXXXXXXXXXX&download=1;5287082
 
+Save the Playlist to:
+/opt/247/your-playlist.txt
+
+Create a folder:
+/opt/247/your-playlist (without .txt)
+
 The Service is made for your home usage, so the HLS Stream and ffmpeg are not running 24/7. 
 The Stream.php file creates an access.txt file. If this file is not older than 1 Minute, the service.sh will start the Service for your playlist.
 After you stop watching the Stream, it will be stopped after 1 Minute.
