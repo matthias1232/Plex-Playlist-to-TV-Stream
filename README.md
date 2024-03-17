@@ -10,10 +10,8 @@ Example Playlist Output is:
 https://your-plexserver.com:8443/library/parts/593852/1555545600/file.mkv?X-Plex-Token=XXXXXXXXXXXXXXXXXXXX&download=1;5287082
 
 Save the Playlist to:
-/opt/247/your-playlist.txt
+/opt/247/your-moviename/playlist.txt
 
-Create a folder:
-/opt/247/your-playlist (without .txt)
 
 The Service is made for your home usage, so the HLS Stream and ffmpeg are not running 24/7. 
 The Stream.php file creates an access.txt file. If this file is not older than 1 Minute, the service.sh will start the Service for your playlist.
@@ -27,7 +25,7 @@ After you first run service.sh a Service will be created with the name 247:
 You can then stop the script and run it again with:
 service 247 start
 
-Default location for your HLS webserver is /var/www/html/247/ (you can change it in video.py)
+Default location for your HLS webserver is /var/www/html/247/your-moviename/stream.m3u8 (you can change it in video.py)
 
 You can also run some specific Stream as real 24/7 with "video.py your-playlist" (your-playlist = name of your playlist file without .txt)
 
