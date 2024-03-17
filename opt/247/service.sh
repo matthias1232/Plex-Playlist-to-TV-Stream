@@ -71,6 +71,7 @@ do
 		cp /opt/247/loading/stream.php /var/www/html/247/$moviename/stream.php
 		if [[ ! -e /var/www/html/247/$moviename/access.txt ]]; then
     			touch /var/www/html/247/$moviename/access.txt
+                        chmod 777 /var/www/html/247/$moviename/access.txt
 		fi
 	        if comparedate /var/www/html/247/$moviename/access.txt; then
 		rm -f /lib/systemd/system/$moviename.service
