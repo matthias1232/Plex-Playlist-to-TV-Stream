@@ -1,8 +1,11 @@
 #######BEGIN SCRIPT############
 #!/bin/bash
-# This checks that the specified file is less than 28 hours old.
-# returns 0 if younger than 28 hours.
-# returns 1 if older than 28 hours.
+
+
+playlistfolder=/opt/247
+hlsfolder=/var/www/html/247
+
+
  
 #funtion arguments -> filename to comapre against curr time
 function comparedate() {
@@ -33,7 +36,7 @@ After=network.target
 [Service]
 Type=simple
 Restart=always
-ExecStart=/bin/bash /opt/247/service.sh
+ExecStart=/bin/bash $playlistfolder/service.sh
 ExecReload=/bin/kill -HUP \$MAINPID
 
 
@@ -52,7 +55,7 @@ systemctl enable 247.service
 while :
 	do
 	movienames=()
-	for dir in /opt/247/*/
+	for dir in $playlistfolder/*/
 		do
 		name=$(basename "$dir")
 		movienames+=($name)
@@ -61,15 +64,15 @@ while :
 
 	for moviename in ${movienames[@]}
 		do
-	        #find /var/www/html/247/*/*.ts -name '*.ts' -mmin +1 -delete >/dev/null 2>&1
-		mkdir -p /var/www/html/247/$moviename
-                mkdir -p /opt/247/$moviename
-		cp /opt/247/loading/stream.php /var/www/html/247/$moviename/stream.php
-		if [[ ! -e /var/www/html/247/$moviename/access.txt ]]; then
-    			touch /var/www/html/247/$moviename/access.txt
-			chmod 777 /var/www/html/247/$moviename/access.txt
+	        #find $hlsfolder/*/*.ts -name '*.ts' -mmin +1 -delete >/dev/null 2>&1
+		mkdir -p $hlsfolder/$moviename
+                mkdir -p $playlistfolder/$moviename
+		cp $playlistfolder/loading/stream.php $hlsfolder/$moviename/stream.php
+		if [[ ! -e $hlsfolder/$moviename/access.txt ]]; then
+    			touch $hlsfolder/$moviename/access.txt
+			chmod 777 $hlsfolder/$moviename/access.txt
 		fi
-	        if comparedate /var/www/html/247/$moviename/access.txt; then
+	        if comparedate $hlsfolder/$moviename/access.txt; then
 		rm -f /lib/systemd/system/$moviename.service
 ####Writing Service File Start###
 cat <<EOT >> /lib/systemd/system/$moviename.service
@@ -80,7 +83,7 @@ After=network.target
 [Service]
 Type=simple
 Restart=always
-ExecStart=/bin/python3 /opt/247/video.py $moviename
+ExecStart=/bin/python3 $playlistfolder/video.py $moviename
 ExecReload=/bin/kill -HUP \$MAINPID
 KillSignal=SIGINT
 
@@ -94,9 +97,9 @@ EOT
                		/usr/bin/systemctl stop $moviename.service
 			rm -f /lib/systemd/system/$moviename.service
 			systemctl daemon-reload
-                	find /var/www/html/247/$moviename/*.ts -name '*.ts' -delete >/dev/null 2>&1
-                	find /var/www/html/247/$moviename/stream.m3u8 -name 'stream.m3u8' -delete >/dev/null 2>&1
-                	cp /opt/247/loading/*.* /var/www/html/247/$moviename/ -r
+                	find $hlsfolder/$moviename/*.ts -name '*.ts' -delete >/dev/null 2>&1
+                	find $hlsfolder/$moviename/stream.m3u8 -name 'stream.m3u8' -delete >/dev/null 2>&1
+                	cp $playlistfolder/loading/*.* $hlsfolder/$moviename/ -r
         	fi
 	done
 	sleep 1
