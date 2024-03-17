@@ -26,4 +26,5 @@ Default location for your HLS webserver is /var/www/html/247/ (you can change it
 You can also run some specific Stream as real 24/7 with "video.py your-playlist" (your-playlist = name of your playlist file without .txt)
 
 Example Entry for your TVHEADEND Server:
+
 pipe:///usr/bin/ffmpeg -i http://your-webserver.com/247/your-playlist/stream.php -metadata title="24/7 Your Playlist" -vcodec copy -map 0:v:0 -map 0:a:0 -map 0:a:1? -c:a ac3 -c:v copy -strftime 1 -preset faster -f mpegts pipe:1
