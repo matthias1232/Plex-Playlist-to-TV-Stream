@@ -39,7 +39,7 @@ print("stream.php created")
 
 #subprocess.run(shlex.split('/usr/bin/ffmpeg -re -err_detect ignore_err -f concat -safe 0 -protocol_whitelist file,http,https,tcp,crypto,data,tls -stream_loop -1 -i /opt/247/two-and-a-half-men/playlist.txt -max_muxing_queue_size 999999 -map 0:v:0 -map 0:a:0 -map 0:a:1? -c:a copy -c:v copy -f hls -hls_time 8 -hls_list_size 10 -hls_flags delete_segments /var/www/html/247/two-and-a-half-men/stream.m3u8'))
 
-playlistfile = playlistfolder + moviename + ".txt"
+playlistfile = playlistfolder + moviename + "/playlist.txt"
 
 
 

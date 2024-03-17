@@ -53,7 +53,7 @@ def get_credentials():
     if token:
         return token
     else:
-        return "no_token"
+        return "zoRU3u4NP1s56Qu7ndat"
 
 # list of servers
 
