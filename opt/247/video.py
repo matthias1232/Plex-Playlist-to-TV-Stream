@@ -100,6 +100,7 @@ except:
 
 
 #####Calculate new Video Point###
+lastplaytimesecago = lastplaytimesecago + lasttime
 while lastplaytimesecago > 0:
     entry_number = 1
     for entry in playlistfile:
@@ -132,9 +133,8 @@ while lastplaytimesecago > 0:
                    position = position + 1
                    continue
                if durationsec > lasttime:
-                   lasttime = lasttime + lastplaytimesecago
+                   lasttime = lastplaytimesecago
                    lastplaytimesecago = 0
-                   continue
 
         entry_number = entry_number + 1
     #lastplaytimesecago = 0
