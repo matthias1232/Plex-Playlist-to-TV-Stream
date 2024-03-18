@@ -128,6 +128,7 @@ while lastplaytimesecago > 0:
             if lastplaytimesecago < durationsec:
                if durationsec < lasttime:
                    lasttime = lasttime - durationsec
+                   lastplaytimesecago = lastplaytimesecago - lasttime
                    position = position + 1
                    continue
                if durationsec > lasttime:
