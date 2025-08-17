@@ -1,4 +1,4 @@
-This Tools creates a 24/7 Streaming Service for your Videos hosted in Plex Playlists.
+Plex Playlists to 24x7 TV Streaming in Kodi + TVHeadend
 
 Just Create a Plex Playlist and this Tool Creates a 24x7 TV Channel from that list including an EPG like a real TV Channel.
 
