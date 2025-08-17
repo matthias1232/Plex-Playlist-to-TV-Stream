@@ -12,3 +12,6 @@ Host your favourite Series, Movies from Plex with your TVHeadend Server as self 
 This tool uses a modified fork of PlexURLGen
 The Original Script and Documentation is here:
 https://github.com/BalliAsghar/PlexURLGen
+
+
+Documentation is coming soon...
