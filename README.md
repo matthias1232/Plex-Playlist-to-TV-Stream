@@ -9,7 +9,7 @@ Host your favourite Series, Movies from Plex with your TVHeadend Server as self 
 
 
 
-This tool uses a modified fork of PlexURLGen to fetch all data from plex and generate json and epg xml data.
+This tool uses a modified fork of PlexURLGen to fetch all data from plex and generate json and epg xml data which are needet, to create the epg with all informations to the played movies/episodes.
 The Original Script and Documentation is here:
 https://github.com/BalliAsghar/PlexURLGen
 
