@@ -1,5 +1,5 @@
 
-# Plex Playlists to 24x7 TV Channels for Kodi & TVHeadend
+# Plex Playlists to TV Channels for Kodi & TVHeadend
 Your Plex Playlists are now your private TV Channels with EPG.
 
 All entries will be looped and repeated infinite. An EPG is included, everything is compatible with TVHeadend and Kodi.
