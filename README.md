@@ -1,5 +1,11 @@
 This Tools creates a 24/7 Streaming Service for your Videos hosted in Plex Playlists.
 
+Just Create a Plex Playlist and this Tool Creates a 24x7 TV Channel from that list including an EPG like a real TV Channel.
+
+Watch your favourite Series, Movies from Plex in your Favourite TV Client like Kodi with TVHeadend or similar.
+<img width="1911" height="884" alt="image" src="https://github.com/user-attachments/assets/50b87961-319d-461f-aa06-160e7bae9512" />
+
+
 Create a playlist with the tool PlexURLGen, the modified Version is in the "loading folder" (/opt/247/loading/PlexURLGen/plex)
 The Original Script and Documentation is here:
 https://github.com/BalliAsghar/PlexURLGen
