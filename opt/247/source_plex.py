@@ -10,6 +10,7 @@ from keyring.errors import PasswordDeleteError
 from urllib.parse import unquote
 import pyperclip
 import json
+from datetime import datetime
 
 # UTILS
 
@@ -298,10 +299,21 @@ def playlist_cli(m3u):
     for index, server in enumerate(servers, start=1):
         click.echo(f"{index}. {server['name']}")
 
-    server_index = click.prompt(
-        "Enter server number", type=int) - 1
 
-    #server_index = 1 - 1
+        # Get server_index from settings if available
+        try:
+            with open('userdata/settings.json', 'r') as f:
+                settings = json.load(f)
+            server_index_json = settings.get('server_index', "ask")
+        except (FileNotFoundError, json.JSONDecodeError):
+            server_index_json = "ask"
+
+
+    if server_index_json == "ask":
+        server_index = click.prompt(
+            "Enter server number", type=int) - 1
+    elif server_index_json.isdigit():
+        server_index = int(server_index_json) - 1
 
     try:
         server_name = servers[server_index]['name']
@@ -337,8 +349,7 @@ def playlist_cli(m3u):
                 file.close()
             print(playlist_title + " written to " + str(path) + "/playlist.txt")
             
-            import json
-            from datetime import datetime
+
 
             def default_serializer(obj):
                 if isinstance(obj, datetime):
