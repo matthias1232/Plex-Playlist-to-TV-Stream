@@ -1,5 +1,5 @@
-Plex Playlists to 24x7 TV Streaming in Kodi + TVHeadend
 
+# Plex Playlists to 24x7 TV Streaming in Kodi + TVHeadend
 Just Create a Plex Playlist and this Tool Creates a 24x7 TV Channel from that list including an EPG like a real TV Channel.
 
 Watch your favourite Series, Movies from Plex in your Favourite TV Client like Kodi with TVHeadend or similar.
