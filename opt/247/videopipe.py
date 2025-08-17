@@ -60,7 +60,7 @@ def fast_get_video_url_from_epg(epg_file):
 
 
 def stream_loop_from_epg_playlist(epg_file, playlistfolder, moviename):
-    playlist_path = os.path.join(playlistfolder, "movies", moviename, "playlist-stream.txt")
+    playlist_path = os.path.join(playlistfolder, "userdata", "movies", moviename, "playlist-stream.txt")
     os.makedirs(os.path.dirname(playlist_path), exist_ok=True)
 
     # 🧠 Step 1: EPG auslesen, Start-URL ermitteln
