@@ -1,4 +1,5 @@
 {
   "plex_token": "no_token",
+  "server_index": "1",
   "socket_path": "/var/lib/tvheadend/epggrab/xmltv.sock"
 }
