@@ -4,7 +4,7 @@ Your Plex Playlists are now your private TV Channels with EPG.
 
 All entries will be looped and repeated infinite. An EPG is included, everything is compatible with TVHeadend and Kodi.
 
-Watch your favourite Series, Movies from Plex in your Favourite TV Client like Kodi with TVHeadend or similar.
+Watch your favourite Series, Movies from Plex in your Kodi TVHeadend Client or in your own solution.
 <img width="1911" height="884" alt="image" src="https://github.com/user-attachments/assets/e24ca50b-6dd5-4b74-b40b-125b77599944" />
 
 
