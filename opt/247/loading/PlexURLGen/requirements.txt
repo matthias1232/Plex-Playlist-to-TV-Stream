@@ -1,4 +1,0 @@
-click
-plexapi
-keyrings.cryptfile
-pyperclip

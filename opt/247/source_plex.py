@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import re
+import shlex
+import subprocess
 import click
 from plexapi.exceptions import BadRequest, NotFound
 from plexapi.myplex import MyPlexAccount
@@ -7,6 +9,7 @@ import keyring
 from keyring.errors import PasswordDeleteError
 from urllib.parse import unquote
 import pyperclip
+import json
 
 # UTILS
 
@@ -43,18 +46,32 @@ def copy_to_clipboard(url):
 
 
 def save_credentials(token):
-    keyring.set_password('plexURLGen', 'token', token)
+    try:
+        with open('userdata/settings.json', 'r') as f:
+            settings = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        settings = {}
+    
+    settings['plex_token'] = token
+
+    with open('userdata/settings.json', 'w') as f:
+        json.dump(settings, f, indent=2)
 
 # Get User Credentials
 
 
 def get_credentials():
-    token = keyring.get_password('plexURLGen', 'token')
-    if token:
+    try:
+        with open('userdata/settings.json', 'r') as f:
+            settings = json.load(f)
+        token = settings.get('plex_token')
+    except (FileNotFoundError, json.JSONDecodeError, KeyError):
+        token = None
+    if token:        
         return token
     else:
         return "no_token"
-
+        
 # list of servers
 
 
@@ -111,8 +128,51 @@ def get_playlist_info(account, server_name, playlist_title):
         duration = item.duration
         file_name = item.media[0].parts[0].file.split("/")[-1]
         item_info.append((url, file_name, duration))
-
     return item_info
+
+def get_epg_data_for_playlist(account, server_name, playlist_title):
+    """
+    Returns a list of dicts with EPG-like metadata for each movie in the playlist,
+    including the full media URL with Plex token.
+    """
+    plex = account.resource(server_name).connect()
+    playlist = plex.playlist(playlist_title)
+    epg_data = []
+    for item in playlist.items():
+        base_url = item._server._baseurl
+        token = item._server._token
+        media_url = item.media[0].parts[0].key if item.media and item.media[0].parts else ""
+        full_url = f"{base_url}{media_url}?X-Plex-Token={token}&download=1" if media_url else ""
+        # Staffel (season) und Folge (episode) extrahieren, falls vorhanden
+        season = getattr(item, "parentIndex", None)
+        episode = getattr(item, "index", None)
+        series_title = getattr(item, "grandparentTitle", "")  # Serienname
+        data = {
+            "title": getattr(item, "title", ""),
+            "year": getattr(item, "year", ""),
+            "summary": getattr(item, "summary", ""),
+            "duration": getattr(item, "duration", 0),
+            "rating": getattr(item, "rating", ""),
+            "content_rating": getattr(item, "contentRating", ""),
+            "genres": [g.tag for g in getattr(item, "genres", [])],
+            "directors": [d.tag for d in getattr(item, "directors", [])],
+            "writers": [w.tag for w in getattr(item, "writers", [])],
+            "actors": [a.tag for a in getattr(item, "actors", [])],
+            "thumb": base_url + getattr(item, "thumb", "") + f"?X-Plex-Token={token}",
+            "art": base_url + getattr(item, "art", "") + f"?X-Plex-Token={token}",
+            "original_title": getattr(item, "originalTitle", ""),
+            "studio": getattr(item, "studio", ""),
+            "guid": getattr(item, "guid", ""),
+            "addedAt": getattr(item, "addedAt", ""),
+            "updatedAt": getattr(item, "updatedAt", ""),
+            "url": full_url,
+            "season": season,
+            "episode": episode,
+            "series_title": series_title  # Serienname hinzufügen
+            
+        }
+        epg_data.append(data)
+    return epg_data
 
 
 def get_download_url(web_url):
@@ -162,7 +222,7 @@ def get_download_url(web_url):
     base_url = media._server._baseurl
     media_url = media.media[0].parts[0].key
     token = media._server._token
-    url = f"{base_url}{media_url}?X-Plex-Token={token}&download=1"
+    url = f"{base_url}{media_url}?X-Plex-Token={token}"
 
     return url
 
@@ -206,19 +266,29 @@ def download_media_cli(query):
     except Exception as e:
         click.echo('Error: {}'.format(e))
 
-
 @click.command(name='signout')
 def signout_cli():
     try:
-        keyring.delete_password('plexURLGen', 'token')
+        try:
+            with open('userdata/settings.json', 'r') as f:
+                settings = json.load(f)
+        except (FileNotFoundError, json.JSONDecodeError):
+            settings = {}
+
+        settings['plex_token'] = "no_token"
+
+        with open('userdata/settings.json', 'w') as f:
+            json.dump(settings, f, indent=2)
+            
         click.echo('Signed out successfully')
-    except PasswordDeleteError:
+    except:
         click.echo('No credentials found')
 
 
 @click.command(name='playlist')
 @click.option('--m3u', is_flag=True, help='Save as m3u playlist')
 def playlist_cli(m3u):
+    from pathlib import Path
     account = get_account()
 
     # List servers
@@ -231,12 +301,14 @@ def playlist_cli(m3u):
     server_index = click.prompt(
         "Enter server number", type=int) - 1
 
+    #server_index = 1 - 1
+
     try:
         server_name = servers[server_index]['name']
     except IndexError:
         raise click.ClickException('Invalid server number')
 
-    click.echo("Choose a playlist:")
+    click.echo("Playlist files getting generated now:")
     playlists = list_playlists(account, server_name)
 
     # If no playlists, exit
@@ -244,48 +316,50 @@ def playlist_cli(m3u):
         click.echo("No playlists found")
         return
 
-    for index, playlist in enumerate(playlists, start=1):
-        click.echo(f"{index}. {playlist.title}")
-
-    playlist_index = click.prompt(
-        "Enter playlist number", type=int) - 1
-
     try:
-        playlist_title = playlists[playlist_index].title
+        playlist_index = 0
+        for playindex in playlists:
+            playlist_title = playlists[playlist_index].title
+
+            media_info = get_playlist_info(account, server_name, playlist_title)
+            epg_data = get_epg_data_for_playlist(account, server_name, playlist_title)
+            script_dir = Path(__file__).parent
+            path = script_dir / "userdata" / "movies" / playlist_title
+            path.mkdir(parents=True, exist_ok=True)
+
+            file = open(path / "playlist.txt", "w")
+            file.write("")
+            file.close()
+
+            for item in media_info:
+                file = open(path / "playlist.txt", "a")
+                file.write(f"{item[0]} \n")
+                file.close()
+            print(playlist_title + " written to " + str(path) + "/playlist.txt")
+            
+            import json
+            from datetime import datetime
+
+            def default_serializer(obj):
+                if isinstance(obj, datetime):
+                    return obj.isoformat()
+                return str(obj)
+
+            with open(path / "epg.json", "w") as file:
+                for item in epg_data:
+                    file.write(json.dumps(item, default=default_serializer) + "\n")
+            print(playlist_title + " written to " + str(path) + "/epg.json")
+
+            subprocess.run(shlex.split(f'{script_dir}/videopipe.py --moviename {playlist_title} --epg --epgupdate'))
+            
+            playlist_index = playlist_index + 1
+            
+            
     except IndexError:
-        click.echo("Invalid playlist number")
+        click.echo("Invalid playlist number" + str(playlist_index))
         return
 
-    media_info = get_playlist_info(account, server_name, playlist_title)
 
-    if m3u:
-        write_m3u8_file(playlist_title, media_info)
-        click.echo(f"Playlist saved as {playlist_title}.m3u8")
-        return
-
-    # display media Titles
-    click.echo("0. Display all links")
-    for index, item in enumerate(media_info, start=1):
-        click.echo(f"{index}. {item[1]}. {item[2]}.")
-
-    # prompt user for media selection,
-    media_index = click.prompt(
-        "Enter media number(s) to download (separated by comma)", type=str)
-
-    # if the user enters 0, display all links
-    if (media_index == "0"):
-        for item in media_info:
-            click.echo(f"{item[0]}")
-        return
-
-    selected_media = [int(index) - 1 for index in media_index.split(',')]
-
-    for index in selected_media:
-        try:
-            copy_to_clipboard(media_info[index][0])
-            click.echo(f"{media_info[index][0]}")
-        except IndexError:
-            click.echo(f"Invalid media number {index}")
 
 
 plex.add_command(authenticate_cli)
